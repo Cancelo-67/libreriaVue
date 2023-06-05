@@ -1,0 +1,23 @@
+<template>
+  <div id="app">
+    <Navbar />
+    <router-view />
+  </div>
+</template>
+
+<script>
+import Navbar from "./components/Navbar.vue";
+
+export default {
+  name: "NavBar",
+  components: {
+    Navbar,
+  },
+};
+</script>
+
+<style>
+#app {
+  /* Estilos para el contenedor principal de la aplicación */
+}
+</style>
