@@ -14,7 +14,10 @@
         <i class="fas fa-shopping-cart"></i>
       </router-link>
       <router-link v-if="logued" to="/login" class="navbar-icon">
-        <i class="fa-thin fa-right-from-bracket" style="color: #000000"></i>
+        <i
+          class="fa-duotone fa-right-from-bracket"
+          style="--fa-primary-color: #000000; --fa-secondary-color: #000000"
+        ></i>
       </router-link>
       <!-- Usuario no logueado -->
       <router-link v-if="!logued" to="/login" class="">

@@ -4,6 +4,7 @@ import Home from "../pages/Home.vue";
 import Book from "../pages/Book.vue";
 import Cart from "../pages/Cart.vue";
 import Login from "../pages/Login.vue";
+import Register from "../pages/Register.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -11,6 +12,7 @@ const routes = [
   { path: "/book/:id", name: "Book", component: Book },
   { path: "/cart", name: "Cart", component: Cart },
   { path: "/login", name: "Login", component: Login },
+  { path: "/register", name: "Register", component: Register },
 ];
 
 const router = createRouter({
