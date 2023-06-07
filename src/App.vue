@@ -16,8 +16,4 @@ export default {
 };
 </script>
 
-<style>
-#app {
-  /* Estilos para el contenedor principal de la aplicación */
-}
-</style>
+<style></style>

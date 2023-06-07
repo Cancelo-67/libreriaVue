@@ -1,7 +1,21 @@
 <template>
+  <!-- PopUp usuario registrado correctamente -->
+  <div class="popup" v-if="goodPopup">
+    <div class="popup-content">
+      <h2>Usuario registrado</h2>
+      <p>Usuario registrado correctamente</p>
+    </div>
+  </div>
+  <!-- Usuario no registrado -->
+  <div class="popup" v-if="badPopup">
+    <div class="popup-content">
+      <h2>Usuario no registrado</h2>
+      <p>El nombre de usuario o email ya existen</p>
+    </div>
+  </div>
   <div class="container">
     <h1>Registro de Usuario</h1>
-    <form @submit.prevent="submitForm(users)">
+    <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="username">Nombre de usuario</label>
         <input
@@ -17,12 +31,7 @@
       </div>
       <div class="form-group">
         <label for="lastname">Apellidos</label>
-        <input
-          type="text"
-          id="lastname"
-          v-model="formData.apellidos"
-          required
-        />
+        <input type="text" id="lastname" v-model="formData.apellido" required />
       </div>
       <div class="form-group">
         <label for="email">Correo electrónico</label>
@@ -37,6 +46,9 @@
           required
         />
       </div>
+      <router-link to="/login"
+        ><p class="btn">¿Ya tienes una cuenta?</p></router-link
+      >
       <button type="submit">Registrarse</button>
     </form>
   </div>
@@ -51,16 +63,15 @@ export default {
       formData: {
         nombreusuario: "",
         nombre: "",
-        apellidos: "",
+        apellido: "",
         email: "",
         contrasena: "",
         favoritos: [],
       },
       users: [],
+      goodPopup: false,
+      badPopup: false,
     };
-  },
-  computed() {
-    this.fetchUsers();
   },
   methods: {
     async fetchUsers() {
@@ -71,25 +82,36 @@ export default {
         console.log(error);
       }
     },
-    async submitForm(users) {
+    async submitForm() {
+      console.log(this.users);
       try {
-        if (users === []) {
-          axios.post("http://localhost:9000/api/usuarios", this.formData);
+        const userExists = this.users.some(
+          (user) => user.nombreusuario === this.formData.nombreusuario
+        );
+        const emailExists = this.users.some(
+          (user) => user.email === this.formData.email
+        );
+
+        if (userExists || emailExists) {
+          this.badPopup = true;
+          setTimeout(() => {
+            this.badPopup = false;
+          }, 1800);
         } else {
-          if (
-            this.users.find(
-              (user) => user.nombreusuario === this.formData.nombreusuario
-            )
-          ) {
+          this.goodPopup = true;
+          setTimeout(() => {
+            this.goodPopup = false;
+            axios.post("http://localhost:9000/api/usuarios", this.formData);
             this.$router.push("/login");
-          } else {
-            console.log("Usuario no creado");
-          }
+          }, 1800);
         }
       } catch (error) {
         console.log(error);
       }
     },
+  },
+  created() {
+    this.fetchUsers();
   },
 };
 </script>
@@ -100,7 +122,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 76vh;
 }
 
 form {
@@ -136,5 +158,26 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+.question {
+  text-decoration: none;
 }
 </style>

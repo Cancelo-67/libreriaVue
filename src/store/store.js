@@ -2,7 +2,7 @@ import { createStore } from "vuex";
 
 const store = createStore({
   state: {
-    logued: true,
+    logued: false,
   },
   actions: {
     logout({ commit }) {
@@ -10,7 +10,7 @@ const store = createStore({
     },
   },
   mutations: {
-    setlogued(state, value) {
+    setLogued(state, value) {
       state.logued = value;
     },
   },
