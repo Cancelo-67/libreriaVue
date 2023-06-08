@@ -9,8 +9,8 @@
   <!-- Usuario no registrado -->
   <div class="popup" v-if="badPopup">
     <div class="popup-content">
-      <h2>Usuario no registrado</h2>
-      <p>El nombre de usuario o email ya existen</p>
+      <h2>{{ text }}</h2>
+      <p>{{ text2 }}</p>
     </div>
   </div>
   <div class="container">
@@ -49,7 +49,7 @@
       <router-link to="/login"
         ><p class="btn">¿Ya tienes una cuenta?</p></router-link
       >
-      <button type="submit">Registrarse</button>
+      <button class="btn btn-primary" type="submit">Registrarse</button>
     </form>
   </div>
 </template>
@@ -66,9 +66,11 @@ export default {
         apellido: "",
         email: "",
         contrasena: "",
-        favoritos: [],
+        cart: [],
       },
       users: [],
+      text: "",
+      text2: "",
       goodPopup: false,
       badPopup: false,
     };
@@ -94,16 +96,19 @@ export default {
           (user) => user.email === this.formData.email
         );
 
+        // Validación de formulario
         if (userExists || emailExists) {
+          this.text = "Usuario no registrado";
+          this.text2 = "Este usuario ya existe";
           this.badPopup = true;
           setTimeout(() => {
             this.badPopup = false;
           }, 1800);
         } else {
           this.goodPopup = true;
-          setTimeout(() => {
+          setTimeout(async () => {
             this.goodPopup = false;
-            axios.post(
+            await axios.post(
               "https://libreria-node-production.up.railway.app/api/usuarios",
               this.formData
             );
@@ -121,7 +126,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
   display: flex;
   flex-direction: column;
@@ -152,18 +157,6 @@ input {
   border: 1px solid #ccc;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
 .popup {
   position: fixed;
   top: 0;
@@ -182,6 +175,7 @@ button:hover {
   border-radius: 4px;
   text-align: center;
 }
+
 .question {
   text-decoration: none;
 }

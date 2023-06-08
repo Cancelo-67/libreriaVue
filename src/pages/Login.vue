@@ -89,15 +89,14 @@ export default {
             this.badPopup = false;
           }, 1800);
         } else {
-          this.users.some((user) => {
-            if (userExists && passwordExists) {
-              console.log(user._id);
-            }
-          });
           this.goodPopup = true;
           setTimeout(() => {
             this.goodPopup = false;
             this.changeValue();
+            const currentUser = this.users.find(
+              (user) => user.nombreusuario === this.formData.nombreusuario
+            );
+            localStorage.setItem("userLogued", currentUser._id);
             this.$router.push("/");
           }, 2000);
         }
@@ -112,7 +111,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
   display: flex;
   flex-direction: column;

@@ -37,6 +37,7 @@ export default {
     logOut() {
       this.changeValue();
       this.$router.push("/");
+      localStorage.removeItem("userLogued");
     },
   },
   computed: {
