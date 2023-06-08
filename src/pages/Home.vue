@@ -66,7 +66,7 @@ export default {
       currentIndex: 0,
       books: [],
       searchTerm: "",
-      url: "http://localhost:9000/api/libros/",
+      url: "https://libreria-node-production.up.railway.app/api/libros/",
     };
   },
   created() {

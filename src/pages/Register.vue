@@ -76,14 +76,16 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await axios.get("http://localhost:9000/api/usuarios/");
+        const response = await axios.get(
+          "https://libreria-node-production.up.railway.app/api/usuarios/"
+        );
         this.users = response.data;
+        console.log(this.users);
       } catch (error) {
         console.log(error);
       }
     },
     async submitForm() {
-      console.log(this.users);
       try {
         const userExists = this.users.some(
           (user) => user.nombreusuario === this.formData.nombreusuario
@@ -101,7 +103,10 @@ export default {
           this.goodPopup = true;
           setTimeout(() => {
             this.goodPopup = false;
-            axios.post("http://localhost:9000/api/usuarios", this.formData);
+            axios.post(
+              "https://libreria-node-production.up.railway.app/api/usuarios",
+              this.formData
+            );
             this.$router.push("/login");
           }, 1800);
         }

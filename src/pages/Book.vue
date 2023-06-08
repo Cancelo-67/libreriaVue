@@ -43,7 +43,7 @@ export default {
   methods: {
     async fetchBooks() {
       const bookId = this.$route.params.id;
-      const url = `http://localhost:9000/api/libros/${bookId}`;
+      const url = `https://libreria-node-production.up.railway.app/api/libros/${bookId}`;
       getBooks(url).then((data) => {
         this.dataBook = data;
       });

@@ -66,7 +66,9 @@ export default {
     },
     async fetchUsers() {
       try {
-        const response = await axios.get("http://localhost:9000/api/usuarios/");
+        const response = await axios.get(
+          "https://libreria-node-production.up.railway.app/api/usuarios/"
+        );
         this.users = response.data;
       } catch (error) {
         console.log(error);
@@ -81,14 +83,17 @@ export default {
           (user) => user.contrasena === this.formData.contrasena
         );
 
-        console.log(this.formData.contrasena);
-        console.log(this.users);
         if (!userExists || !passwordExists) {
           this.badPopup = true;
           setTimeout(() => {
             this.badPopup = false;
           }, 1800);
         } else {
+          this.users.some((user) => {
+            if (userExists && passwordExists) {
+              console.log(user._id);
+            }
+          });
           this.goodPopup = true;
           setTimeout(() => {
             this.goodPopup = false;
