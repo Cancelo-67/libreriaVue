@@ -1,6 +1,11 @@
 <template>
   <nav class="navbar">
-    <div class="navbar-logo">
+    <div v-if="logued" class="navbar-logo">
+      <router-link to="/"
+        ><img class="img-logo" src="../images/logo.png" alt="Logo"
+      /></router-link>
+    </div>
+    <div v-if="!logued" class="navbar-logo">
       <img class="img-logo" src="../images/logo.png" alt="Logo" />
     </div>
     <div class="navbar-icons">

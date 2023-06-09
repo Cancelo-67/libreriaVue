@@ -1,4 +1,9 @@
 <template>
+  <div class="popup" v-if="popup">
+    <div class="popup-content">
+      <h2><strong>Libro añadido al carrito</strong></h2>
+    </div>
+  </div>
   <div>
     <div v-if="dataBook" class="book-item">
       <div class="book-content">
@@ -14,12 +19,16 @@
             <div v-if="dataBook.cantidad <= 0">
               <p class="outStock">Fuera de Stock</p>
               <button class="buy-button" disabled>Comprar</button>
-              <button class="buy-button" disabled>Añadir a carrito</button>
+              <button @click="cart" class="buy-button" disabled>
+                Añadir a carrito
+              </button>
             </div>
-            <div v-else="dataBook.cantidad > 10">
+            <div v-else>
               <p class="stock">En Stock</p>
               <button class="buy-button">Comprar</button>
-              <button class="buy-button">Añadir a carrito</button>
+              <button @click="addToCart" class="buy-button">
+                Añadir a carrito
+              </button>
             </div>
           </div>
         </div>
@@ -29,12 +38,17 @@
 </template>
 
 <script>
+import axios from "axios";
 import getBooks from "../helper/getBooks";
 
 export default {
   data() {
     return {
       dataBook: null,
+      bookId: this.$route.params.id,
+      userId: localStorage.getItem("userLogued"),
+      amountBooks: 0,
+      popup: false,
     };
   },
   mounted() {
@@ -42,11 +56,42 @@ export default {
   },
   methods: {
     async fetchBooks() {
-      const bookId = this.$route.params.id;
-      const url = `https://libreria-node-production.up.railway.app/api/libros/${bookId}`;
+      const url = `https://libreria-node-production.up.railway.app/api/libros/${this.bookId}`;
       getBooks(url).then((data) => {
         this.dataBook = data;
       });
+    },
+    async addToCart() {
+      try {
+        const response = await axios.get(
+          `https://libreria-node-production.up.railway.app/api/usuarios/${this.userId}`
+        );
+
+        const user = response.data;
+        const existingBook = user.cart.find(
+          (item) => item.title === this.dataBook.titulo
+        );
+        if (existingBook) {
+          existingBook.amount++;
+        } else {
+          user.cart.push({
+            title: this.dataBook.titulo,
+            image: this.dataBook.imagen,
+            price: this.dataBook.precio,
+            amount: 1,
+          });
+        }
+        this.popup = true;
+        setTimeout(() => {
+          this.popup = false;
+        }, 1800);
+        await axios.put(
+          `https://libreria-node-production.up.railway.app/api/usuarios/${this.userId}`,
+          user
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

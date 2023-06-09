@@ -112,6 +112,4 @@ export default {
   border-radius: 4px;
   text-align: center;
 }
-
-/* Boton eliminar cuenta */
 </style>
