@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="total">
-        <p>Total: ${{ calculateTotal() }}</p>
+        <p>Total: {{ calculateTotal() }}€</p>
         <button class="btn btn-primary" @click="buy">Realizar compra</button>
       </div>
     </div>

@@ -36,7 +36,11 @@
           <ul v-for="comment in comments">
             <li :key="comment._id">
               {{ comment.comentario }}
-              <button @click="eliminateComment(comment._id)" v-if="eliminate">
+              <button
+                @click="eliminateComment(comment._id)"
+                v-if="comment.eliminate"
+                class="btn btn-danger btn-sm"
+              >
                 Eliminar comentario
               </button>
             </li>
@@ -49,7 +53,9 @@
               cols="50"
               placeholder="Escribe tu comentario"
             ></textarea>
-            <button type="submit">Enviar comentario</button>
+            <button type="submit" class="btn btn-primary">
+              Enviar comentario
+            </button>
           </form>
         </div>
       </div>
@@ -71,7 +77,6 @@ export default {
       popup: false,
       newComment: "",
       comments: [],
-      eliminate: false,
     };
   },
   mounted() {
@@ -126,9 +131,9 @@ export default {
       response.data.forEach((comment) => {
         if (comment.id_Libro === this.bookId) {
           this.comments.push(comment);
-        }
-        if (comment.id_Usuario === this.userId) {
-          this.eliminate = true;
+          if (comment.id_Usuario === this.userId) {
+            comment.eliminate = true;
+          }
         }
       });
     },
@@ -257,6 +262,7 @@ export default {
 .description {
   width: 50%;
 }
+
 ul {
   list-style-type: none;
 }
