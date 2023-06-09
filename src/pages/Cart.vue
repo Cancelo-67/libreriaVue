@@ -7,8 +7,8 @@
         <div class="item-details">
           <h3>{{ item.title }}</h3>
           <img :src="item.image" alt="" />
-          <p>Cantidad: {{ item.amount }}</p>
-          <p>Precio unidad: ${{ item.price }}</p>
+          <p class="p-amount">Cantidad: {{ item.amount }}</p>
+          <p class="p-price">Precio unidad: {{ item.price }}€</p>
         </div>
         <div class="item-actions">
           <button class="btn btn-outline-primary" @click="decreaseAmount(item)">
@@ -116,5 +116,11 @@ export default {
 .total {
   margin-top: 20px;
   text-align: right;
+}
+.p-price {
+  font-size: 20px;
+}
+.p-amount {
+  font-size: 20px;
 }
 </style>

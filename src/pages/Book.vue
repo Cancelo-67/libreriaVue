@@ -31,6 +31,26 @@
               </button>
             </div>
           </div>
+          <!-- Comentarios -->
+          <h3>Comentarios</h3>
+          <ul v-for="comment in comments">
+            <li :key="comment._id">
+              {{ comment.comentario }}
+              <button @click="eliminateComment(comment._id)" v-if="eliminate">
+                Eliminar comentario
+              </button>
+            </li>
+          </ul>
+          <h3>Deja un comentario</h3>
+          <form @submit.prevent="createComment">
+            <textarea
+              v-model="newComment"
+              rows="4"
+              cols="50"
+              placeholder="Escribe tu comentario"
+            ></textarea>
+            <button type="submit">Enviar comentario</button>
+          </form>
         </div>
       </div>
     </div>
@@ -49,10 +69,14 @@ export default {
       userId: localStorage.getItem("userLogued"),
       amountBooks: 0,
       popup: false,
+      newComment: "",
+      comments: [],
+      eliminate: false,
     };
   },
   mounted() {
     this.fetchBooks();
+    this.getComments();
   },
   methods: {
     async fetchBooks() {
@@ -67,12 +91,12 @@ export default {
           `https://libreria-node-production.up.railway.app/api/usuarios/${this.userId}`
         );
 
-        const user = response.data;
-        const existingBook = user.cart.find(
+        user = response.data;
+        const existBookBook = user.cart.find(
           (item) => item.title === this.dataBook.titulo
         );
-        if (existingBook) {
-          existingBook.amount++;
+        if (existBookBook) {
+          existBookBook.amount++;
         } else {
           user.cart.push({
             title: this.dataBook.titulo,
@@ -93,17 +117,80 @@ export default {
         console.log(error);
       }
     },
+    //Extraer comentarios de la API
+    async getComments() {
+      this.comments = [];
+      const response = await axios.get(
+        "https://libreria-node-production.up.railway.app/api/comentario"
+      );
+      response.data.forEach((comment) => {
+        if (comment.id_Libro === this.bookId) {
+          this.comments.push(comment);
+        }
+        if (comment.id_Usuario === this.userId) {
+          this.eliminate = true;
+        }
+      });
+    },
+    //Post de los comentarios a la API
+    createComment() {
+      const trimmedComment = this.newComment.trim();
+
+      if (trimmedComment === "") {
+        console.log("Comentario vacío");
+      } else {
+        const createNewComment = {
+          id_Usuario: this.userId,
+          id_Libro: this.bookId,
+          comentario: trimmedComment,
+        };
+
+        axios
+          .post(
+            "https://libreria-node-production.up.railway.app/api/comentario",
+            createNewComment
+          )
+          .then(() => {
+            this.getComments();
+            this.newComment = "";
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+    async eliminateComment(idComment) {
+      axios
+        .delete(
+          `https://libreria-node-production.up.railway.app/api/comentario/${idComment}`
+        )
+        .then(() => {
+          this.getComments();
+        });
+    },
   },
 };
 </script>
 
 <style scoped>
-.stock {
-  color: green;
+.popup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
-.outStock {
-  color: red;
+
+.popup-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
 }
+
 .book-item {
   padding: 20px;
   border: 1px solid #ccc;
@@ -158,7 +245,39 @@ export default {
   background-color: #ff0000;
   cursor: not-allowed;
 }
+
+.stock {
+  color: green;
+}
+
+.outStock {
+  color: red;
+}
+
 .description {
   width: 50%;
+}
+ul {
+  list-style-type: none;
+}
+
+h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+form textarea {
+  width: 48%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+form button[type="submit"] {
+  background-color: #3ed440;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>
