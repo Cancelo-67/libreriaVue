@@ -139,15 +139,15 @@ export default {
     },
     //Post de los comentarios a la API
     createComment() {
-      const trimmedComment = this.newComment.trim();
+      const goodComment = this.newComment.trim();
 
-      if (trimmedComment === "") {
+      if (goodComment === "") {
         console.log("Comentario vacío");
       } else {
         const createNewComment = {
           id_Usuario: this.userId,
           id_Libro: this.bookId,
-          comentario: trimmedComment,
+          comentario: goodComment,
         };
 
         axios
