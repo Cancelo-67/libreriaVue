@@ -91,7 +91,7 @@ export default {
           `https://libreria-node-production.up.railway.app/api/usuarios/${this.userId}`
         );
 
-        user = response.data;
+        const user = response.data;
         const existBookBook = user.cart.find(
           (item) => item.title === this.dataBook.titulo
         );
