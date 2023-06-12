@@ -15,6 +15,7 @@
       </router-link>
       <router-link v-if="logued" to="/cart" class="navbar-icon">
         <i class="fas fa-shopping-cart"></i>
+        <span class="span-cart">{{ cartTotal }}</span>
       </router-link>
       <router-link v-if="logued" to="/login" class="navbar-icon">
         <i @click="logOut" class="fa-solid fa-right-from-bracket"></i>
@@ -33,6 +34,7 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import "@fortawesome/fontawesome-free/css/all.css";
+import store from "../store/store";
 export default {
   methods: {
     ...mapMutations(["setLogued"]),
@@ -46,7 +48,13 @@ export default {
     },
   },
   computed: {
-    ...mapState(["logued"]),
+    ...mapState({
+      logued: (state) => state.logued,
+      total: (state) => state.total,
+    }),
+    cartTotal() {
+      return this.total.toFixed(2);
+    },
   },
 };
 </script>
@@ -99,6 +107,9 @@ export default {
 .navbar-icon {
   margin-left: 10px;
   color: #000;
-  /* Estilos para los iconos */
+}
+
+.span-cart {
+  font-size: 17px;
 }
 </style>

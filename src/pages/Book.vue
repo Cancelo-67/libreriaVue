@@ -33,24 +33,55 @@
           </div>
           <!-- Comentarios -->
           <h3>Comentarios</h3>
-          <ul v-for="comment in comments">
-            <li :key="comment._id">
-              {{ comment.comentario }}
-              <button
-                @click="eliminateComment(comment._id)"
-                v-if="comment.eliminate"
-                class="btn btn-danger btn-sm"
-              >
-                Eliminar comentario
-              </button>
+          <ul>
+            <li v-for="comment in comments" :key="comment._id">
+              <div class="comment-container">
+                <span v-if="comment._id !== editCommentId">
+                  {{ comment.comentario }}
+                </span>
+                <span v-else>
+                  <textarea
+                    v-model="editedComment"
+                    rows="2"
+                    cols="30"
+                  ></textarea>
+                  <div>
+                    <button @click="saveComment" class="btn btn-primary btn-sm">
+                      Guardar cambios
+                    </button>
+                    <button
+                      @click="cancelEdit"
+                      class="btn btn-secondary btn-sm"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </span>
+                <div v-if="!editCommentId">
+                  <button
+                    @click="editComment(comment._id)"
+                    v-if="comment.eliminate"
+                    class="btn btn-primary btn-sm"
+                  >
+                    Editar comentario
+                  </button>
+                  <button
+                    @click="eliminateComment(comment._id)"
+                    v-if="comment.eliminate"
+                    class="btn btn-danger btn-sm"
+                  >
+                    Eliminar comentario
+                  </button>
+                </div>
+              </div>
             </li>
           </ul>
           <h3>Deja un comentario</h3>
-          <form @submit.prevent="createComment">
+          <form @submit.prevent="createComment" class="form-comment">
             <textarea
               v-model="newComment"
-              rows="4"
-              cols="50"
+              rows="2"
+              cols="30"
               placeholder="Escribe tu comentario"
             ></textarea>
             <button type="submit" class="btn btn-primary">
@@ -77,14 +108,16 @@ export default {
       popup: false,
       newComment: "",
       comments: [],
+      editCommentId: null,
+      editedComment: "",
     };
   },
   mounted() {
-    this.fetchBooks();
+    this.getBook();
     this.getComments();
   },
   methods: {
-    async fetchBooks() {
+    async getBook() {
       const url = `https://libreria-node-production.up.railway.app/api/libros/${this.bookId}`;
       getBooks(url).then((data) => {
         this.dataBook = data;
@@ -122,7 +155,6 @@ export default {
         console.log(error);
       }
     },
-    //Extraer comentarios de la API
     async getComments() {
       this.comments = [];
       const response = await axios.get(
@@ -137,7 +169,6 @@ export default {
         }
       });
     },
-    //Post de los comentarios a la API
     createComment() {
       const goodComment = this.newComment.trim();
 
@@ -165,19 +196,46 @@ export default {
       }
     },
     async eliminateComment(idComment) {
-      axios
-        .delete(
+      try {
+        await axios.delete(
           `https://libreria-node-production.up.railway.app/api/comentario/${idComment}`
-        )
-        .then(() => {
-          this.getComments();
-        });
+        );
+        this.getComments();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    editComment(commentId) {
+      this.editCommentId = commentId;
+      const comment = this.comments.find(
+        (comment) => comment._id === commentId
+      );
+      this.editedComment = comment.comentario;
+    },
+    saveComment() {
+      const comment = this.comments.find(
+        (comment) => comment._id === this.editCommentId
+      );
+      comment.comentario = this.editedComment;
+      this.editCommentId = null;
+      this.editedComment = "";
+      console.log(comment);
+      axios.put(
+        `https://libreria-node-production.up.railway.app/api/comentario/${comment._id}`,
+        comment
+      );
+    },
+    cancelEdit() {
+      this.editCommentId = null;
+      this.editedComment = "";
     },
   },
 };
 </script>
 
 <style scoped>
+/* Estilos previos */
+
 .popup {
   display: flex;
   justify-content: center;
@@ -188,102 +246,92 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
 }
 
 .popup-content {
-  background-color: #fff;
+  background-color: white;
   padding: 20px;
   border-radius: 5px;
 }
 
 .book-item {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-.book-item .book-content {
   display: flex;
-  align-items: center;
+  justify-content: center;
 }
 
-.book-item img {
-  width: 200px;
-  margin-right: 20px;
+.book-content {
+  width: 800px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
 }
 
-.book-item .book-details {
-  flex: 1;
+.book-image {
+  width: 40%;
 }
 
-.book-item h2 {
+.book-image img {
+  width: 100%;
+  height: auto;
+}
+
+.book-details {
+  width: 55%;
+}
+
+.book-details h2 {
   font-size: 24px;
-  margin-bottom: 10px;
+  margin-top: 0;
 }
 
-.book-item .divider {
-  border-top: 1px solid #ccc;
-  margin-bottom: 10px;
-}
-
-.book-item p {
-  margin-bottom: 10px;
-}
-
-.book-item .buttons {
-  display: flex;
-  align-items: center;
-}
-
-.book-item .buy-button {
-  background-color: #3ed440;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.book-item .buy-button:disabled {
-  background-color: #ff0000;
-  cursor: not-allowed;
-}
-
-.stock {
-  color: green;
-}
-
-.outStock {
-  color: red;
+.divider {
+  margin: 20px 0;
 }
 
 .description {
-  width: 50%;
+  font-size: 16px;
 }
 
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.outStock {
+  font-weight: bold;
+  color: red;
+}
+
+.stock {
+  font-weight: bold;
+  color: green;
+}
+
+.buy-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.comment-container {
+  display: flex;
+  flex-direction: column;
+}
 ul {
+  padding: 0;
   list-style-type: none;
 }
 
-h3 {
-  margin-top: 20px;
+li {
   margin-bottom: 10px;
 }
-
-form textarea {
-  width: 48%;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-form button[type="submit"] {
-  background-color: #3ed440;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
+.form-comment {
+  margin-bottom: 10%;
 }
 </style>

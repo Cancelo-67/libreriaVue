@@ -27,6 +27,22 @@
           class="form-control"
           placeholder="Buscar libros..."
         />
+        <select v-model="selectedGenre" class="form-control">
+          <option value="">Todos los géneros</option>
+          <option value="Ficcion">Ficcion</option>
+          <option value="Comic">Comic</option>
+          <option value="Albumes Ilustrados">Albumes Ilustrados</option>
+          <option value="Literatura y Ficcion">Literatura y Ficcion</option>
+          <option value="+14 años">+14 años</option>
+        </select>
+        <select v-model="selectedYear" class="form-control">
+          <option value="">Todos los años</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <option value="2021">2021</option>
+          <option value="2020">2020</option>
+          <option value="2019">2019</option>
+        </select>
       </div>
     </div>
 
@@ -67,6 +83,8 @@ export default {
       books: [],
       searchTerm: "",
       url: "https://libreria-node-production.up.railway.app/api/libros/",
+      selectedGenre: "",
+      selectedYear: "",
     };
   },
   created() {
@@ -93,13 +111,19 @@ export default {
   },
   computed: {
     filteredBooks() {
-      if (this.searchTerm) {
+      if (this.searchTerm || this.selectedGenre || this.selectedYear) {
         const searchTermLower = this.searchTerm.toLowerCase();
         return this.books.filter((item) => {
-          return (
+          const matchesSearchTerm =
             item.titulo.toLowerCase().includes(searchTermLower) ||
-            item.autor.toLowerCase().includes(searchTermLower)
-          );
+            item.autor.toLowerCase().includes(searchTermLower);
+          const matchesGenre = this.selectedGenre
+            ? item.genero.toLowerCase() === this.selectedGenre.toLowerCase()
+            : true;
+          const matchesYear = this.selectedYear
+            ? item.año.toString() === this.selectedYear.toString()
+            : true;
+          return matchesSearchTerm && matchesGenre && matchesYear;
         });
       } else {
         return this.books;
@@ -197,7 +221,7 @@ export default {
 }
 
 .book-item {
-  flex: 0 0 calc(25% - 10px);
+  flex: 0 0 240px;
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ccc;

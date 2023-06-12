@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="total">
-        <p>Total: {{ calculateTotal() }}€</p>
+        <p>Total: {{ cartTotal }}€</p>
         <button class="btn btn-primary" @click="buy">Realizar compra</button>
       </div>
     </div>
@@ -32,6 +32,8 @@
 
 <script>
 import axios from "axios";
+import { mapMutations } from "vuex";
+import store from "../store/store";
 
 export default {
   data() {
@@ -44,12 +46,15 @@ export default {
     this.getUser();
   },
   methods: {
+    ...mapMutations(["setTotal"]), // Importa la mutación setTotal del store
+
     async getUser() {
       try {
         const response = await axios.get(
           `https://libreria-node-production.up.railway.app/api/usuarios/${this.userId}`
         );
         this.dataUser = response.data;
+        this.calculateTotal(); // Actualiza el total al obtener los datos del usuario
       } catch (error) {
         console.log(error);
       }
@@ -68,17 +73,20 @@ export default {
       if (item.amount > 1) {
         item.amount--;
         this.updateCart();
+        this.calculateTotal();
       }
     },
     increaseAmount(item) {
       item.amount++;
       this.updateCart();
+      this.calculateTotal();
     },
     removeCart(item) {
       const index = this.dataUser.cart.indexOf(item);
       if (index !== -1) {
         this.dataUser.cart.splice(index, 1);
         this.updateCart();
+        this.calculateTotal();
       }
     },
     calculateTotal() {
@@ -86,10 +94,16 @@ export default {
       for (const item of this.dataUser.cart) {
         total += item.price * item.amount;
       }
+      this.setTotal(total);
       return total;
     },
     buy() {
       console.log("Compra realizada");
+    },
+  },
+  computed: {
+    cartTotal() {
+      return store.state.total.toFixed(2);
     },
   },
 };
