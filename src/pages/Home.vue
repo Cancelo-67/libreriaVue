@@ -31,6 +31,7 @@
           <option value="">Todos los géneros</option>
           <option value="Ficcion">Ficcion</option>
           <option value="Comic">Comic</option>
+          <option value="Informatica">Informatica</option>
           <option value="Albumes Ilustrados">Albumes Ilustrados</option>
           <option value="Literatura y Ficcion">Literatura y Ficcion</option>
           <option value="+14 años">+14 años</option>
@@ -49,7 +50,7 @@
     <div class="book-list">
       <div class="book-group">
         <div
-          v-for="(item, index) in filteredBooks"
+          v-for="(item, index) in paginatedBooks"
           :key="index"
           class="book-item"
         >
@@ -64,6 +65,18 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="pagination">
+      <button
+        v-for="pageNumber in totalPages"
+        :key="pageNumber"
+        @click="setCurrentPage(pageNumber)"
+        :class="{ active: currentPage === pageNumber }"
+        class="page-number"
+      >
+        {{ pageNumber }}
+      </button>
     </div>
   </div>
 </template>
@@ -85,6 +98,8 @@ export default {
       url: "https://libreria-node-production.up.railway.app/api/libros/",
       selectedGenre: "",
       selectedYear: "",
+      currentPage: 1,
+      itemsPerPage: 10,
     };
   },
   created() {
@@ -108,6 +123,9 @@ export default {
     nextSlide() {
       this.currentIndex = (this.currentIndex + 1) % this.images.length;
     },
+    setCurrentPage(pageNumber) {
+      this.currentPage = pageNumber;
+    },
   },
   computed: {
     filteredBooks() {
@@ -129,11 +147,20 @@ export default {
         return this.books;
       }
     },
+    totalPages() {
+      return Math.ceil(this.filteredBooks.length / this.itemsPerPage);
+    },
+    paginatedBooks() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.filteredBooks.slice(startIndex, endIndex);
+    },
   },
 };
 </script>
+
 <style scoped>
-/* Carousel*/
+/* Carousel */
 
 .carousel {
   position: relative;
@@ -176,7 +203,10 @@ export default {
   font-size: 24px;
   border-radius: 50%;
   padding: 8px 12px;
-} /* Barra de búsqueda */
+}
+
+/* Barra de búsqueda */
+
 .search-bar {
   margin-top: 20px;
   display: flex;
@@ -205,7 +235,7 @@ export default {
   border-radius: 0 4px 4px 0;
 }
 
-/* Libros*/
+/* Libros */
 
 .book-list {
   margin-top: 20px;
@@ -244,5 +274,27 @@ export default {
 .author {
   font-size: 12px;
   color: #555;
+}
+
+/* Paginación */
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.page-number {
+  font-size: 14px;
+  padding: 8px;
+  margin: 0 5px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.page-number.active {
+  background-color: #ccc;
 }
 </style>
