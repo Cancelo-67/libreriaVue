@@ -4,6 +4,11 @@
       <h2><strong>Libro añadido al carrito</strong></h2>
     </div>
   </div>
+  <div class="star" v-if="star">
+    <div class="star-content">
+      <i class="fa-solid fa-star fa-2xl"></i>
+    </div>
+  </div>
   <div>
     <div v-if="dataBook" class="book-item">
       <div class="book-content">
@@ -61,16 +66,16 @@
                   <button
                     @click="editComment(comment._id)"
                     v-if="comment.eliminate"
-                    class="btn btn-primary btn-sm"
+                    class="btn btn-warning btn-sm"
                   >
-                    Editar comentario
+                    Editar
                   </button>
                   <button
                     @click="eliminateComment(comment._id)"
                     v-if="comment.eliminate"
                     class="btn btn-danger btn-sm"
                   >
-                    Eliminar comentario
+                    Eliminar
                   </button>
                 </div>
               </div>
@@ -110,6 +115,7 @@ export default {
       comments: [],
       editCommentId: null,
       editedComment: "",
+      star: false,
     };
   },
   mounted() {
@@ -147,6 +153,11 @@ export default {
         setTimeout(() => {
           this.popup = false;
         }, 1800);
+        this.star = true;
+        setTimeout(() => {
+          this.star = false;
+        }, 5000);
+
         await axios.put(
           `https://libreria-node-production.up.railway.app/api/usuarios/${this.userId}`,
           user
@@ -253,6 +264,20 @@ export default {
   background-color: white;
   padding: 20px;
   border-radius: 5px;
+}
+.star {
+  display: flex;
+  justify-content: end;
+  position: fixed;
+  top: 100px;
+  left: 0;
+  width: 90%;
+  height: 100%;
+  background-color: inherit;
+  z-index: 999;
+  transition-property: red;
+  transition-duration: 1s;
+  transition-delay: 2s;
 }
 
 .book-item {

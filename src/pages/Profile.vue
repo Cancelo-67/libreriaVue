@@ -7,7 +7,7 @@
   </div>
   <div class="profile">
     <div class="profile-header">
-      <h2>Editar perfil</h2>
+      <h2>Editar perfil {{ updatedUser.nombreusuario }}</h2>
     </div>
     <div class="profile-form">
       <form @submit.prevent="updateUser">

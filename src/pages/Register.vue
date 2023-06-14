@@ -23,19 +23,50 @@
           id="username"
           v-model="formData.nombreusuario"
           required
+          @blur="validateUserName"
         />
+        <p v-if="errorsForm.nombreusuario" class="error-message">
+          {{ errorsForm.nombreusuario }}
+        </p>
       </div>
       <div class="form-group">
         <label for="name">Nombre</label>
-        <input type="text" id="name" v-model="formData.nombre" required />
+        <input
+          type="text"
+          id="name"
+          v-model="formData.nombre"
+          required
+          @blur="validateName"
+        />
+        <p v-if="errorsForm.nombre" class="error-message">
+          {{ errorsForm.nombre }}
+        </p>
       </div>
       <div class="form-group">
         <label for="lastname">Apellidos</label>
-        <input type="text" id="lastname" v-model="formData.apellido" required />
+        <input
+          type="text"
+          id="lastname"
+          v-model="formData.apellido"
+          required
+          @blur="validateLastName"
+        />
+        <p v-if="errorsForm.apellido" class="error-message">
+          {{ errorsForm.apellido }}
+        </p>
       </div>
       <div class="form-group">
         <label for="email">Correo electrónico</label>
-        <input type="email" id="email" v-model="formData.email" required />
+        <input
+          type="email"
+          id="email"
+          v-model="formData.email"
+          required
+          @blur="validateEmail"
+        />
+        <p v-if="errorsForm.email" class="error-message">
+          {{ errorsForm.email }}
+        </p>
       </div>
       <div class="form-group">
         <label for="password">Contraseña</label>
@@ -44,11 +75,15 @@
           id="password"
           v-model="formData.contrasena"
           required
+          @blur="validatePassword"
         />
+        <p v-if="errorsForm.contrasena" class="error-message">
+          {{ errorsForm.contrasena }}
+        </p>
       </div>
-      <router-link to="/login"
-        ><p class="btn">¿Ya tienes una cuenta?</p></router-link
-      >
+      <router-link to="/login">
+        <p class="btn">¿Ya tienes una cuenta?</p>
+      </router-link>
       <button class="btn btn-primary" type="submit">Registrarse</button>
     </form>
   </div>
@@ -68,6 +103,14 @@ export default {
         contrasena: "",
         cart: [],
       },
+      errorsForm: {
+        nombreusuario: "",
+        nombre: "",
+        apellido: "",
+        email: "",
+        contrasena: "",
+        error: "",
+      },
       users: [],
       text: "",
       text2: "",
@@ -76,6 +119,49 @@ export default {
     };
   },
   methods: {
+    validateUserName() {
+      if (this.formData.nombreusuario.trim() === "") {
+        this.errorsForm.nombreusuario = "Nombre de usuario es requerido";
+      } else {
+        this.errorsForm.nombreusuario = "";
+      }
+    },
+    validateName() {
+      if (this.formData.nombre.trim() === "") {
+        this.errorsForm.nombre = "Nombre es requerido";
+      } else {
+        this.errorsForm.nombre = "";
+      }
+    },
+    validateLastName() {
+      if (this.formData.apellido.trim() === "") {
+        this.errorsForm.apellido = "Apellidos son requeridos";
+      } else {
+        this.errorsForm.apellido = "";
+      }
+    },
+    validateEmail() {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+      if (this.formData.email.trim() === "") {
+        this.errorsForm.email = "Correo electrónico es requerido";
+      } else if (!emailRegex.test(this.formData.email)) {
+        this.errorsForm.email = "Correo electrónico inválido";
+      } else {
+        this.errorsForm.email = "";
+      }
+    },
+    validatePassword() {
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!.@#$%]).{8,24}$/;
+      if (this.formData.contrasena.trim() === "") {
+        this.errorsForm.contrasena = "Contraseña es requerida.";
+      } else if (!passwordRegex.test(this.formData.contrasena)) {
+        this.errorsForm.contrasena =
+          "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número, un carácter especial y tener entre 8 y 24 caracteres.";
+      } else {
+        this.errorsForm.contrasena = "";
+      }
+    },
     async fetchUsers() {
       try {
         const response = await axios.get(
@@ -89,6 +175,17 @@ export default {
     },
     async submitForm() {
       try {
+        if (
+          this.errorsForm.nombreusuario ||
+          this.errorsForm.nombre ||
+          this.errorsForm.apellido ||
+          this.errorsForm.email ||
+          this.errorsForm.contrasena
+        ) {
+          // Si hay algún mensaje de error, no enviar el formulario
+          return;
+        }
+
         const userExists = this.users.some(
           (user) => user.nombreusuario === this.formData.nombreusuario
         );
@@ -96,7 +193,6 @@ export default {
           (user) => user.email === this.formData.email
         );
 
-        // Validación de formulario
         if (userExists || emailExists) {
           this.text = "Usuario no registrado";
           this.text2 = "Este usuario ya existe";
@@ -174,6 +270,11 @@ input {
   padding: 1rem;
   border-radius: 4px;
   text-align: center;
+}
+
+.error-message {
+  color: red;
+  margin-top: 0.25rem;
 }
 
 .question {
