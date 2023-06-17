@@ -230,7 +230,6 @@ export default {
       comment.comentario = this.editedComment;
       this.editCommentId = null;
       this.editedComment = "";
-      console.log(comment);
       axios.put(
         `https://libreria-node-production.up.railway.app/api/comentario/${comment._id}`,
         comment

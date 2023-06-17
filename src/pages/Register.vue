@@ -168,7 +168,6 @@ export default {
           "https://libreria-node-production.up.railway.app/api/usuarios/"
         );
         this.users = response.data;
-        console.log(this.users);
       } catch (error) {
         console.log(error);
       }
