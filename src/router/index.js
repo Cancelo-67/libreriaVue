@@ -5,6 +5,7 @@ import Book from "../pages/Book.vue";
 import Cart from "../pages/Cart.vue";
 import Login from "../pages/Login.vue";
 import Register from "../pages/Register.vue";
+import Error from "../pages/Error.vue";
 import store from "../store/store";
 
 function isAuthenticated() {
@@ -29,6 +30,11 @@ const routes = [
     name: "Book",
     component: Book,
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/:catchAll(.*)",
+    name: "Error",
+    component: Error,
   },
   {
     path: "/cart",
